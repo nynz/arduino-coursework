@@ -1,0 +1,17 @@
+
+int ledPin = 9; //LED connected to digital pin 9
+int phoRes = A0; //photoresistor connected to analog pin A0
+int val = 0 ; //variable to store Read value
+
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(ledPin,OUTPUT); //set pin 9 (LED) as output
+  pinMode(phoRes, INPUT); //set photoResister as input
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  val = analogRead(phoRes);
+  analogWrite(ledPin, val/3);
+}
