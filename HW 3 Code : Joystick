@@ -1,0 +1,68 @@
+
+
+int UD;
+int LR;
+//OUTPUT LED pins
+int UP = 11;
+int DOWN = 12;
+int LEFT = 13;
+int RIGHT = 10;
+//INPUT joystick x and y pins
+int Y = A0; //y axis , up down
+int X = A1; //x axis , left right
+// difference from center
+int diff = 10;
+int UDmid; 
+int LRmid; 
+
+void setup(){
+  //set leds as output
+  pinMode(UP,OUTPUT);
+  pinMode(DOWN,OUTPUT);
+  pinMode(LEFT,OUTPUT);
+  pinMode(RIGHT,OUTPUT);
+
+  //calibrate center
+   UDmid = analogRead(Y); //find the middle of the y axis
+   LRmid = analogRead(X); //find the middle of the x axis
+}
+
+
+void loop(){
+  UD = analogRead(Y); //current sensor value of the y
+  LR = analogRead(X); // current sensor value of the x
+
+  //DOWN configuration
+  if (UD> UDmid + diff){
+    digitalWrite(UP,HIGH);
+  }else{
+    digitalWrite(UP,LOW);
+  }
+  //UP configuration
+  if(UD < UDmid - diff){
+    digitalWrite(DOWN,HIGH);
+  }else{
+    digitalWrite(DOWN,LOW);
+  }
+
+  //LEFT configuration
+  if(LR< LRmid - diff){
+    digitalWrite(LEFT,HIGH);
+  }else{
+    digitalWrite(LEFT,LOW);
+  }
+
+  //RIGHT configutation
+  if(LR > LRmid + diff){
+    digitalWrite(RIGHT,HIGH);
+  }else{
+    digitalWrite(RIGHT,LOW);
+  }
+
+  delay(100);
+}
+
+
+
+
+
