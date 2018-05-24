@@ -1,0 +1,125 @@
+#include <Servo.h>
+
+#define TURN_TIME 500 //the higher the time, the longer it turns for 
+#define SLOW_TURN_TIME 700
+
+const byte servoPin = 10;
+const byte servoPin2 = 9; //NEW
+
+const int FastButtonPin = 5;
+const int SlowButtonPin = 3;
+
+int FastButtonState = 0;
+int SlowButtonState = 0;
+int mode = 0; //switch case 
+
+const int joyX = A1;        
+const int joyY = A0;       
+const int SWButtonPin  = 7;
+int SWButtonState = 0;
+int joyXmid;
+int joyYmid;
+int diff = 400;
+int servoValX;           // variable to read the value from the analog pin
+int servoValY;
+Servo myservo;
+Servo myservo2;
+
+void setup() {
+   pinMode(FastButtonPin, INPUT);
+   pinMode(SlowButtonPin, INPUT);
+   pinMode(SWButtonPin, INPUT);
+   digitalWrite(SWButtonPin, HIGH);
+   myservo.write(90); //initially must be stopped
+   myservo.attach(servoPin);
+   myservo2.write(90);//NEW
+   myservo2.attach(servoPin2);//NEW
+   Serial.begin(9600);
+   Serial.println("My sketch has started");
+   joyYmid = analogRead(joyY); //find the middle of the y axis; about 520
+   joyXmid = analogRead(joyX); //find the middle of the x axis ; about 520
+}
+
+void loop() {
+    FastButtonState = digitalRead(FastButtonPin);
+      if(FastButtonState == HIGH){ //if its high, it means button pushed
+        Serial.println("Fast pressed");
+        mode = 1;
+      }
+     SlowButtonState = digitalRead(SlowButtonPin);
+        if(SlowButtonState == HIGH){
+          Serial.println("Slow pressed");
+          mode = 2 ;
+        }
+        
+    SWButtonState = digitalRead(SWButtonPin);
+        if(SWButtonState == LOW){
+          Serial.println("SW pressed");
+          mode = 3;
+        }
+
+  switch (mode) {
+    case 1:
+      myservo.write(180); //start turning clockwise
+      delay(TURN_TIME);  // Go on turning for the right duration
+      myservo.write(90); // Stop turning
+      delay(70);
+      myservo.write(0); //turn counter clockwise
+      delay(TURN_TIME);
+      myservo.write(90);
+      delay(70);
+      Serial.println("Fast mode");
+     break;
+
+    case 2:
+      myservo.write(115); //start turning clockwise
+      delay(SLOW_TURN_TIME);  // Go on turning for the right duration
+      myservo.write(90); // Stop turning
+      delay(1000); //for this long
+      myservo.write(65); //turn counter clockwise
+      delay(SLOW_TURN_TIME); //for this long
+      myservo.write(90); //stop turning
+      delay(1000);  //for this long
+      Serial.println("Slow");
+      break;
+      
+   case 3:
+       // Display Joystick values using the serial monitor
+    servoValX = analogRead(joyX); 
+    servoValY = analogRead(joyY); 
+
+      //Down config : 
+      if (servoValX > joyXmid + diff){
+        myservo2.write(70);// counterclockwise rotation, tuck tail
+        delay(15);
+      }else{
+        myservo2.write(90); 
+      }
+    
+     //Up config;
+      if (servoValX < joyXmid - diff){
+        myservo2.write(110); //clockwise rotation, raise tail
+        delay(15);
+      }else{
+        myservo2.write(90); 
+      }
+
+      //Left config;
+      if (servoValY < joyYmid-diff){
+        myservo.write(110); //clockwise rotation, left turn
+        delay(15);
+      }else{
+        myservo.write(90); 
+      }
+     
+        //Right config;
+      if (servoValY> joyYmid+diff){
+        myservo.write(70); //counterclockwise rotation, right turn
+        delay(15);
+      }else{
+        myservo.write(90); 
+      }
+     break; 
+  }
+
+}
